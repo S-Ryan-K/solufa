@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    <title>そるふぁ</title>
+  </head>
+  <body>
+    <div id="solufa" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%;"></div>
+    <script src="solufa/static/js/Solufa.js"></script>
+    <script src="solufa/static/js/Stats.min.js"></script>
+    <script src="solufa/static/js/MSXTransformer.js"></script>
+    <script src="solufa/static/components/Solufa-JyroSync.js"></script>
+    <script src="solufa/static/components/Solufa-OrbitVp.js"></script>
+
+    <script src="solufa/static/components/Solufa-StereoVp.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script type="text/msx;harmony=true">
+    S( function( m ) {
+      	var App = {
+      		controller: function() {
+      			var meshPoses = [];
+      			for ( var i = 0; i < 5; i++ ) {
+      				for ( var j = 0; j < 5; j++ ) {
+      					for ( var k = 0; k < 5; k++ ) {
+      						meshPoses.push({ pos: [i*10-22.5,j*10-22.5,k*10-22.5] });
+      					}
+      				}
+      			}
+
+      			return {
+      				geo: {
+      					type: "Box",
+      					value: [5, 5, 5]
+      				},
+      				mtl: {
+      					type: "MeshPhong",
+      					value: {
+      						color: "#00f",
+      						specular: "#999"
+      					}
+      				},
+      				meshPoses: meshPoses,
+      				rotate: function( elem, isInit ) {
+      					if ( isInit ) return;
+
+      					S.update( function( delta, elapsed ) {
+      						//elem.style.rotateY += delta * .0002;
+      						//elem.style.rotateX += delta * .0002;
+      						elem.style.opacity = .2 + .8 * Math.abs( Math.sin( elapsed * .0005 ) );
+
+      						elem.childNodes[ 0 ].style.colorR = Math.abs( Math.sin( elapsed * .0005 ) );
+      						elem.childNodes[ 0 ].style.colorG = Math.abs( Math.cos( elapsed * .0005 ) );
+      						elem.childNodes[ 0 ].style.colorB = 1 - Math.abs( Math.sin( elapsed * .0005 ) );
+      					});
+      				},
+
+      				cubeAnim: function( elem, isInit ) {
+      					if ( isInit ) return;
+      					this.bar = elem;
+      					var flag = false;
+      					S.update( function() {
+      					    if(elem.style.posY >= 50){
+      					        flag = true;
+      					    }else if(elem.style.posY < -50){
+      					        flag = false;
+      					    }
+      					    if(flag){
+      					        elem.style.posY -=2;
+      					    }else{
+      					        elem.style.posY +=2;
+      					    }
+      						elem.style.rotateY += .01;
+      						elem.physicsStyleNeedsUpdate = true;
+      					});
+      				},
+      			};
+      		},
+      		view: function( ctrl ) {
+      			return <scene>
+      				<obj config={ ctrl.rotate }  style={{posX:100}}>
+      					{ ctrl.meshPoses.map( pos => <mesh physics={{mass:0.5}}
+      					                                   geo={ ctrl.geo }
+      					                                   mtl={ ctrl.mtl }
+      					                                   config={ ctrl.cubeAnim.bind( ctrl ) }
+      					                                   style={ pos }/>)}
+      				</obj>
+              <JyroSync>
+              <cam id="cam"/>
+              </JyroSync>
+      				<light init={{ type: "Dir" }} style={{ pos: [ 1, 10, 10 ] }}/>
+      				<light init={{ type: "Amb" }}/>
+      			</scene>;
+      		}
+      	};
+      	m.mount( S.document.body, App );
+      	m.render( S.document.head, <rdr init={{ frame: "#solufa", antialias: true, preserveDrawingBuffer: true }}>
+      		<StereoVp cam="#cam"/>
+      	</rdr> );
+
+      });
+
+    </script>
+    <script type="text/javascript">
+
+      function ElementRequestFullscreen(element){
+        var list = [
+          "requestFullscreen",
+          "webkitRequestFullScreen",
+          "mozRequestFullScreen",
+          "msRequestFullscreen"
+        ];
+        var i;
+        var num = list.length;
+        for(i=0;i < num;i++){
+          if(element[list[i]]){
+            element[list[i]]();
+            return true;
+          }
+        }
+        return false;
+      }
+      var element = document.getElementById("solufa");
+
+      element.onclick = function (e){
+
+        ElementRequestFullscreen(element);
+
+      };
+    </script>
+  </body>
+</html>
