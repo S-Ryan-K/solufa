@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    <title>そるふぁ</title>
+  </head>
+  <body>
+    <div id="solufa" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%;"></div>
+    <script src="static/js/Solufa.min.js"></script>
+    <script src="static/js/MSXTransformer.js"></script>
+    <script src="static/components/Solufa-JyroSync.js"></script>
+    <script src="static/components/Solufa-StereoVp.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script type="text/msx;harmony=true">
+    S( function( m ) {
+      	var App = {
+      		controller: function() {
+      			var meshPoses = [];
+      			for ( var i = 0; i < 24; i++ ) {
+      						meshPoses.push({ pos: [Math.cos(i*15*Math.PI / 180) * 50,0,Math.sin(i*15*Math.PI / 180) * 50] });
+      			}
+            var meshPoses2 = [];
+            for ( var i = 0; i < 24; i++ ) {
+                  meshPoses2.push({ pos: [Math.cos(i*15*Math.PI / 180-7.5*Math.PI / 180) * 50,6,Math.sin(i*15*Math.PI / 180 -7.5*Math.PI / 180) * 50] });
+            }
+
+            var meshPoses3 = [];
+            for ( var i = 0; i < 24; i++ ) {
+                  meshPoses3.push({ pos: [Math.cos(i*15*Math.PI / 180-7.5*Math.PI / 180) * 50,-6,Math.sin(i*15*Math.PI / 180 -7.5*Math.PI / 180) * 50] });
+            }
+
+      			return {
+      				geo: {
+      					type: "Box",
+      					value: [5, 5, 5]
+      				},
+      				mtl: {
+      					type: "MeshPhong",
+      					value: {
+      						color: "#00f",
+      						specular: "#999"
+      					}
+      				},
+              mtl2: {
+                type: "MeshPhong",
+                value: {
+                  color: "#00f",
+                  specular: "#999"
+                }
+              },
+      				meshPoses: meshPoses,
+              meshPoses2: meshPoses2,
+              meshPoses3: meshPoses3,
+      				rotateAnim: function( elem, isInit ) {
+      					if ( isInit ) return;
+                var time = 0;
+      					S.update( function( delta, elapsed ) {
+                  time += delta;
+      						elem.style.rotateY += delta * .0002;
+                  elem.style.opacity = .2 + .8 * Math.abs( Math.sin( time * .0005 ) );
+                  elem.childNodes[ 0 ].style.colorR = Math.abs( Math.sin( time * .0005 ) );
+                  elem.childNodes[ 0 ].style.colorG = Math.abs( Math.cos( time * .0005 ) );
+                  elem.childNodes[ 0 ].style.colorB = 1 - Math.abs( Math.sin( time* .0005 ) );
+      					});
+      				},
+              rotateAnim2: function( elem, isInit ) {
+                if ( isInit ) return;
+                var time = 0;
+                S.update( function( delta, elapsed ) {
+                  time+=delta;
+                  elem.style.rotateY -= delta * .0002;
+                  elem.style.opacity = .8 * Math.abs( Math.cos( time * .0005 ) );
+                  elem.childNodes[ 0 ].style.colorR = Math.abs( Math.cos( time * .0005 ) );
+                  elem.childNodes[ 0 ].style.colorG = Math.abs( Math.sin( time * .0005 ) );
+                  elem.childNodes[ 0 ].style.colorB = 1 - Math.abs( Math.cos( time * .0005 ) );
+                });
+              },
+      			};
+      		},
+      		view: function( ctrl ) {
+      			return <scene>
+              <obj config={ctrl.rotateAnim2}>
+      					{ ctrl.meshPoses.map( pos => <mesh geo={ ctrl.geo }
+      					                                   mtl={ ctrl.mtl }
+      					                                   style={ pos }/>)}
+              </obj>
+              <obj config={ctrl.rotateAnim2}>
+                {ctrl.meshPoses2.map( pos => <mesh geo={ ctrl.geo }
+                                                   mtl={ ctrl.mtl2 }
+                                                   style={ pos }/>)}
+                {ctrl.meshPoses3.map( pos => <mesh geo={ ctrl.geo }
+                                                   mtl={ ctrl.mtl2 }
+                                                   style={ pos }/>)}
+      				</obj>
+              <JyroSync>
+                <cam id="cam"/>
+              </JyroSync>
+      				<light init={{ type: "Dir" }} style={{ pos: [ 1, 10, 10 ] }}/>
+      				<light init={{ type: "Amb" }}/>
+      			</scene>;
+      		}
+      	};
+      	m.mount( S.document.body, App );
+      	m.render( S.document.head, <rdr init={{ frame: "#solufa", antialias: true, preserveDrawingBuffer: true }}>
+      		<StereoVp cam="#cam"/>
+      	</rdr> );
+
+      });
+
+    </script>
+
+    <script type="text/javascript">
+      var elem = document.getElementById("solufa");
+      elem.onclick = function (e){
+        if (elem.requestFullscreen) {
+          elem.requestFullscreen();
+        } else if (elem.msRequestFullscreen) {
+          elem.msRequestFullscreen();
+        } else if (elem.mozRequestFullScreen) {
+          elem.mozRequestFullScreen();
+        } else if (elem.webkitRequestFullscreen) {
+          elem.webkitRequestFullscreen();
+        }
+      };
+    </script>
+  </body>
+</html>
