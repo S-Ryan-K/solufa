@@ -1,1 +1,69 @@
-Hello world
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    <title>そるふぁ</title>
+  </head>
+  <body>
+    <div id="solufa" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%;"></div>
+    <script src="static/js/Solufa.js"></script>
+    <script src="static/js/MSXTransformer.js"></script>
+    <script src="static/components/Solufa-JyroSync.js"></script>
+    <script src="static/components/Solufa-OrbitVp.js"></script>
+
+    <script src="static/components/Solufa-StereoVp.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <script type="text/msx;harmony=true">
+    S( function( m ) {
+      	var App = {
+      		controller: function() {
+      			return {
+      				geo: {
+      					type: "Box",
+      					value: [1, 1, 1]
+      				},
+      				mtl: {
+      					type: "MeshPhong",
+      					value: {
+      						color: "#00f",
+      						specular: "#999"
+      					}
+      				},
+
+              rotate: function( elem, isInit ) {
+                  if ( isInit ) return;
+                  S.update( function(delta) {
+                      elem.style.rotateY += delta/1000 * 1;
+                      elem.style.rotateX += delta/1000 * 1;
+                  });
+              }
+      			};
+      		},
+      		view: function( ctrl ) {
+      			return <scene>
+                    <obj config={ctrl.rotate}>
+                        <mesh geo={ ctrl.geo } mtl={ ctrl.mtl } style={{ posY:2, rotate: [ 30*Math.PI/180, 45*Math.PI/180, 0 ] }}/>
+                        <mesh geo={ ctrl.geo } mtl={ ctrl.mtl } style={{ posY:-2, rotate: [ 30*Math.PI/180, 45*Math.PI/180, 0 ] }}/>
+                        <mesh geo={ ctrl.geo } mtl={ ctrl.mtl } style={{ posX:2, rotate: [ 30*Math.PI/180, 45*Math.PI/180, 0 ] }}/>
+                        <mesh geo={ ctrl.geo } mtl={ ctrl.mtl } style={{ posX:-2, rotate: [ 30*Math.PI/180, 45*Math.PI/180, 0 ] }}/>
+                        <mesh geo={ ctrl.geo } mtl={ ctrl.mtl } style={{ posZ:2, rotate: [ 30*Math.PI/180, 45*Math.PI/180, 0 ] }}/>
+                        <mesh geo={ ctrl.geo } mtl={ ctrl.mtl } style={{ posZ:-2, rotate: [ 30*Math.PI/180, 45*Math.PI/180, 0 ] }}/>
+                    </obj>
+                    <cam id="cam" style={{posZ:15}}/>
+                    <light init={{ type: "Dir" }} style={{ pos: [ 1, 10, 10 ] }}/>
+                    <light init={{ type: "Amb" }}/>
+      			</scene>;
+      		}
+      	};
+      	m.mount( S.document.body, App );
+      	m.render( S.document.head, <rdr init={{ frame: "#solufa", antialias: true, preserveDrawingBuffer: true }}>
+      		<OrbitVp cam="#cam"/>
+      	</rdr> );
+
+      });
+
+    </script>
+  </body>
+</html>
