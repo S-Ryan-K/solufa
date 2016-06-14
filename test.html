@@ -35,8 +35,8 @@
               rotate: function( elem, isInit ) {
                   if ( isInit ) return;
                   S.update( function(delta) {
-                      elem.style.rotateY += delta/1000 * 1;
-                      elem.style.rotateX += delta/1000 * 1;
+                      elem.style.rotateY += delta * 1;
+                      elem.style.rotateX += delta * 1;
                   });
               }
       			};
