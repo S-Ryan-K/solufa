@@ -106,7 +106,7 @@ let workerScript = "!" + function() {
       });
 
       worldList.forEach( function( world, worldIdx ) {
-        world.step( e.data.delta / 1000 );
+        world.step( e.data.delta );
         world.bodies.forEach( function( body, bodyIdx ) {
           e.data.dataList[ worldIdx ].positions[ 3 * bodyIdx ] = body.position.x;
           e.data.dataList[ worldIdx ].positions[ 3 * bodyIdx + 1 ] = body.position.y;
@@ -272,8 +272,8 @@ function sendData( d ) {
 
     dataList.forEach( checkData );
 
-    if ( delta > 50 ) {
-      delta = 50;
+    if ( delta > .05 ) {
+      delta = .05;
     }
 
     worker.postMessage({
